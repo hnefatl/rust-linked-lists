@@ -7,8 +7,8 @@ pub trait List<T> {
     //fn pop_back(&mut self);
     //fn back(&self) -> &mut T;
 
-    //fn length(&self) -> u32;
+    fn len(&self) -> usize;
 
-    // Replace with iterator impls
+    // TODO(kwc): Replace with iterator impls
     fn to_vec(&mut self) -> Vec<&mut T>;
 }

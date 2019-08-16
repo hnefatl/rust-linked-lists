@@ -3,7 +3,7 @@ use std::mem;
 
 pub struct SingleLinked<T> {
     inner: Node<T>,
-    length: u32
+    length: usize
 }
 enum Node<T> {
     Null,
@@ -29,9 +29,13 @@ impl<T> Node<T> {
 impl<T> list::List<T> for SingleLinked<T> {
     fn push(&mut self, item: T) {
         // mem::replace lets us replace the list without moving it out of self.
-        let old_inner = mem::replace(&mut self.inner, Cons(item, Box::new(Null)));
-        self.inner = old_inner;
-        self.length += 1;
+        let old_tail = mem::replace(&mut self.inner, Cons(item, Box::new(Null)));
+        if let Cons(_, current_tail) = &mut self.inner {
+            **current_tail = old_tail;
+            self.length += 1;
+        } else {
+            panic!("Failed to update head node")
+        }
     }
     fn pop(&mut self) {
         match mem::replace(&mut self.inner, Null) {
@@ -60,6 +64,10 @@ impl<T> list::List<T> for SingleLinked<T> {
     //    let &mut Cons get_tail_mut();
     //}
 
+    fn len(&self) -> usize {
+        self.length
+    }
+
     fn to_vec(&mut self) -> Vec<&mut T> {
         let mut result = Vec::new();
         let mut current = &mut self.inner;
@@ -74,7 +82,8 @@ impl<T> list::List<T> for SingleLinked<T> {
 //    type Item = T;
 //    fn next(&mut self) -> Option<Self::Item> {
 //        match &mut self.inner {
-//
+//            Null => None,
+//            Cons(v, t) => 
 //        }
 //    }
 //}
